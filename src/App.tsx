@@ -39,6 +39,35 @@ const App: React.FC = () => {
 
   const dispatch = useDispatch();
 
+  // console.log('window tel:', (window as any)?.Telegram?.WebApp);
+
+  useEffect(()=>{
+    const telegramWebApp = (window as any)?.Telegram?.WebApp;
+  
+    if (telegramWebApp) {
+      // Initialize the WebApp
+      telegramWebApp.ready();
+      
+      // Get the initData
+      const initData = telegramWebApp.initData;
+  
+      // Parse the initData
+      const initDataObj = new URLSearchParams(initData);
+  
+      // Get the user object from initData
+      const userJson = initDataObj.get('user');
+  
+      if (userJson) {
+        const user = JSON.parse(userJson);
+        console.log('User ID:', user.id);
+      } else {
+        console.log('User object not found in initData');
+      }
+    } else {
+      console.log('Telegram WebApp not initialized');
+    }
+  },[])
+
   const [levelIndex, setLevelIndex] = useState(0);
   // const [points, setPoints] = useState(0);
   const points = useSelector((state: any) => state.points.points)
@@ -135,7 +164,7 @@ const App: React.FC = () => {
     const interval = setInterval(() => {
       // setPoints(prevPoints => prevPoints + pointsPerSecond);
       dispatch(setPoints())
-    }, 1000);
+    }, 300000);
     return () => clearInterval(interval);
   }, [profitPerHour]);
 
