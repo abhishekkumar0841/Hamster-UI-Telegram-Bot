@@ -15,8 +15,8 @@ import Settings from "./icons/Settings";
 import Mine from "./icons/Mine";
 import Friends from "./icons/Friends";
 import Coins from "./icons/Coins";
-import { useDispatch, useSelector } from "react-redux";
-import { getCurrPoints, setPoints } from "./redux/slices/pointsSlice";
+// import { useDispatch } from "react-redux";
+// import { setPoints } from "./redux/slices/pointsSlice";
 
 const App: React.FC = () => {
   const levelNames = [
@@ -48,21 +48,18 @@ const App: React.FC = () => {
   // const dispatch = useDispatch();
 
   const [user, setUser] = useState(null);
-  const [currUserId, setCurrUserId] = useState(null);
   const [created, setCreated] = useState("");
-  const dispatch = useDispatch();
 
   useEffect(() => {
     if ((window as any).Telegram && (window as any).Telegram.WebApp) {
       const telegramUser = (window as any).Telegram.WebApp.initDataUnsafe.user;
       setUser(telegramUser);
-      setCurrUserId(telegramUser?.user?.id);
     }
   }, []);
 
   useEffect(() => {
     if (user) {
-      const data = { userId: currUserId };
+      const data = { userId: (user as any)?.id };
       const createUser = async () => {
         try {
           const createRes = await fetch(`http://localhost:5000/points/create`, {
@@ -88,29 +85,34 @@ const App: React.FC = () => {
   }, [user]);
 
   const [levelIndex, setLevelIndex] = useState(0);
-  // const [points, setPoints] = useState(0);
-  const points = useSelector((state: any) => state.points.points);
-  const currPoints = useSelector((state: any) => state.points.currPoints);
+  const [points, setPoints] = useState(0);
+  // const points = useSelector((state: any) => state.points.points);
   const [clicks, setClicks] = useState<{ id: number; x: number; y: number }[]>(
     []
   );
 
   useEffect(() => {
-    const fetchPoints = async () => {
-      const userId = currUserId;
-      // const userId = '5237413924'
-      try {
-        const pointsRes = await fetch(`http://localhost:5000/points/${userId}`);
-        if (pointsRes?.ok) {
+    if (user) {
+      const fetchPoints = async () => {
+        const userId = (user as any)?.id;
+        try {
+          const pointsRes = await fetch(
+            `http://localhost:5000/points/${userId}`
+          );
           const data = await pointsRes?.json();
-          dispatch(getCurrPoints(data?.points));
+          setPoints(data?.points)
+          // if (pointsRes?.ok) {
+          //   const data = await pointsRes?.json();
+          //   alert(data)
+          //   setPoints(data?.points);
+          // }
+        } catch (error) {
+          console.log("error in fetching points:", (error as any)?.message);
         }
-      } catch (error) {
-        console.log("error in fetching points:", (error as any)?.message);
-      }
-    };
+      };
 
-    fetchPoints();
+      fetchPoints();
+    }
   }, [points]);
 
   const pointsToAdd = 1;
@@ -165,24 +167,8 @@ const App: React.FC = () => {
     }, 100);
 
     // setPoints(points + pointsToAdd);
-    dispatch(setPoints());
+    // dispatch(setPoints());
     setClicks([...clicks, { id: Date.now(), x: e.pageX, y: e.pageY }]);
-    increasePoints();
-  };
-
-  const increasePoints = async () => {
-    dispatch(setPoints());
-    const data = {
-      userId: currUserId,
-      pointsToInc: 1,
-    };
-    await fetch(`http://localhost:5000/points/inc-points`, {
-      method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(data),
-    });
   };
 
   const handleAnimationEnd = (id: number) => {
@@ -237,7 +223,7 @@ const App: React.FC = () => {
             </div>
             <div>
               <h1>Hello, {(user as any)?.first_name}</h1>
-              <p className="text-sm">User ID: {currUserId}</p>
+              <p className="text-sm">User ID: {(user as any)?.id}</p>
               <p className="text-sm">Is Registered: {created}</p>
             </div>
           </div>
@@ -338,8 +324,7 @@ const App: React.FC = () => {
             <div className="px-4 mt-4 flex justify-center">
               <div className="px-4 py-2 flex items-center space-x-2">
                 <img src={dollarCoin} alt="Dollar Coin" className="w-10 h-10" />
-                {/* <p className="text-4xl text-white">{points.toLocaleString()}</p> */}
-                <p className="text-4xl text-white">{currPoints}</p>
+                <p className="text-4xl text-white">{points.toLocaleString()}</p>
               </div>
             </div>
 
