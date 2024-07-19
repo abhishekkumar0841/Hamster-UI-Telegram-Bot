@@ -57,7 +57,7 @@ const App: React.FC = () => {
   }, []);
 
   useEffect(()=>{
-    if(user && (user as any)?.id){
+    if(user){
       const data = {userId : (user as any)?.id}
       const createUser = async () =>{
         try {
