@@ -113,7 +113,7 @@ const App: React.FC = () => {
 
       fetchPoints();
     }
-  }, []);
+  }, [points]);
 
   const pointsToAdd = 1;
   const profitPerHour = 126420;
