@@ -48,6 +48,7 @@ const App: React.FC = () => {
   const dispatch = useDispatch();
 
   const [user, setUser] = useState(null);
+  const [created, setCreated] = useState("")
 
   useEffect(() => {
     if ((window as any).Telegram && (window as any).Telegram.WebApp) {
@@ -71,6 +72,7 @@ const App: React.FC = () => {
 
           if(createRes?.ok){
             const result = await createRes?.json();
+            setCreated("Registered")
             console.log('user created success result:', result);
           }
         } catch (error) {
@@ -198,6 +200,7 @@ const App: React.FC = () => {
             <div>
               <h1>Hello, {(user as any)?.first_name}</h1>
               <p className="text-sm">User ID: {(user as any)?.id}</p>
+              <p className="text-sm">Is Registered: {created}</p>
             </div>
           </div>
           <div className="flex items-center justify-between space-x-4 mt-1">
