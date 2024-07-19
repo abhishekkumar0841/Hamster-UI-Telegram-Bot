@@ -99,11 +99,13 @@ const App: React.FC = () => {
           const pointsRes = await fetch(
             `http://localhost:5000/points/${userId}`
           );
-          if (pointsRes?.ok) {
-            const data = await pointsRes?.json();
-            alert(data)
-            setPoints(data?.points);
-          }
+          const data = await pointsRes?.json();
+          setPoints(data?.points)
+          // if (pointsRes?.ok) {
+          //   const data = await pointsRes?.json();
+          //   alert(data)
+          //   setPoints(data?.points);
+          // }
         } catch (error) {
           console.log("error in fetching points:", (error as any)?.message);
         }
