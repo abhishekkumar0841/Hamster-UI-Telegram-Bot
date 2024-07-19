@@ -56,7 +56,31 @@ const App: React.FC = () => {
     }
   }, []);
 
-  // console.log('window tel:', (window as any)?.Telegram?.WebApp);
+  useEffect(()=>{
+    if(user && (user as any)?.id){
+      const data = {userId : (user as any)?.id}
+      const createUser = async () =>{
+        try {
+          const createRes = await fetch(`https://telegram-bot-backend-beryl.vercel.app/points/create`, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(data)
+          })
+
+          if(createRes?.ok){
+            const result = await createRes?.json();
+            console.log('user created success result:', result);
+          }
+        } catch (error) {
+          console.log((error as any)?.message);
+        }
+      }
+
+      createUser();
+    }
+  },[user])
 
   const [levelIndex, setLevelIndex] = useState(0);
   // const [points, setPoints] = useState(0);
