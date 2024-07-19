@@ -15,8 +15,8 @@ import Settings from "./icons/Settings";
 import Mine from "./icons/Mine";
 import Friends from "./icons/Friends";
 import Coins from "./icons/Coins";
-import { useDispatch, useSelector } from "react-redux";
-import { setPoints } from "./redux/slices/pointsSlice";
+// import { useDispatch } from "react-redux";
+// import { setPoints } from "./redux/slices/pointsSlice";
 
 const App: React.FC = () => {
   const levelNames = [
@@ -45,7 +45,7 @@ const App: React.FC = () => {
     1000000000, // Lord
   ];
 
-  const dispatch = useDispatch();
+  // const dispatch = useDispatch();
 
   const [user, setUser] = useState(null);
   const [created, setCreated] = useState("");
