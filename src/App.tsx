@@ -58,33 +58,6 @@ const App: React.FC = () => {
 
   // console.log('window tel:', (window as any)?.Telegram?.WebApp);
 
-  useEffect(() => {
-    const telegramWebApp = (window as any)?.Telegram?.WebApp;
-
-    if (telegramWebApp) {
-      // Initialize the WebApp
-      telegramWebApp.ready();
-
-      // Get the initData
-      const initData = telegramWebApp.initData;
-
-      // Parse the initData
-      const initDataObj = new URLSearchParams(initData);
-
-      // Get the user object from initData
-      const userJson = initDataObj.get("user");
-
-      if (userJson) {
-        const user = JSON.parse(userJson);
-        console.log("User ID:", user.id);
-      } else {
-        console.log("User object not found in initData");
-      }
-    } else {
-      console.log("Telegram WebApp not initialized");
-    }
-  }, []);
-
   const [levelIndex, setLevelIndex] = useState(0);
   // const [points, setPoints] = useState(0);
   const points = useSelector((state: any) => state.points.points);
@@ -199,8 +172,8 @@ const App: React.FC = () => {
               <Hamster size={24} className="text-[#d4d4d4]" />
             </div>
             <div>
-              <p className="text-sm">Nikandr (CEO)</p>
               <h1>Hello, {(user as any)?.first_name}</h1>
+              <p className="text-sm">User ID: {(user as any)?.id}</p>
             </div>
           </div>
           <div className="flex items-center justify-between space-x-4 mt-1">
