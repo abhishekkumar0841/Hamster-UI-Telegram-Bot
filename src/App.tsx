@@ -101,6 +101,7 @@ const App: React.FC = () => {
           );
           if (pointsRes?.ok) {
             const data = await pointsRes?.json();
+            alert(data)
             setPoints(data?.points);
           }
         } catch (error) {
