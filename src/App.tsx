@@ -48,7 +48,7 @@ const App: React.FC = () => {
   const dispatch = useDispatch();
 
   const [user, setUser] = useState(null);
-  const [created, setCreated] = useState("")
+  const [created, setCreated] = useState("");
 
   useEffect(() => {
     if ((window as any).Telegram && (window as any).Telegram.WebApp) {
@@ -57,39 +57,60 @@ const App: React.FC = () => {
     }
   }, []);
 
-  useEffect(()=>{
-    if(user){
-      const data = {userId : (user as any)?.id}
-      const createUser = async () =>{
+  useEffect(() => {
+    if (user) {
+      const data = { userId: (user as any)?.id };
+      const createUser = async () => {
         try {
           const createRes = await fetch(`http://localhost:5000/points/create`, {
             method: "POST",
             headers: {
               "Content-Type": "application/json",
             },
-            body: JSON.stringify(data)
-          })
+            body: JSON.stringify(data),
+          });
 
-          if(createRes?.ok){
+          if (createRes?.ok) {
             const result = await createRes?.json();
-            setCreated("Registered")
-            console.log('user created success result:', result);
+            setCreated("Registered");
+            console.log("user created success result:", result);
           }
         } catch (error) {
           console.log((error as any)?.message);
         }
-      }
+      };
 
       createUser();
     }
-  },[user])
+  }, [user]);
 
   const [levelIndex, setLevelIndex] = useState(0);
-  // const [points, setPoints] = useState(0);
-  const points = useSelector((state: any) => state.points.points);
+  const [points, setPoints] = useState(0);
+  // const points = useSelector((state: any) => state.points.points);
   const [clicks, setClicks] = useState<{ id: number; x: number; y: number }[]>(
     []
   );
+
+  useEffect(() => {
+    if (user) {
+      const fetchPoints = async () => {
+        const userId = (user as any)?.id;
+        try {
+          const pointsRes = await fetch(
+            `http://localhost:5000/points/${userId}`
+          );
+          if (pointsRes?.ok) {
+            const data = await pointsRes?.json();
+            setPoints(data?.points);
+          }
+        } catch (error) {
+          console.log("error in fetching points:", (error as any)?.message);
+        }
+      };
+
+      fetchPoints();
+    }
+  }, []);
 
   const pointsToAdd = 1;
   const profitPerHour = 126420;
@@ -143,7 +164,7 @@ const App: React.FC = () => {
     }, 100);
 
     // setPoints(points + pointsToAdd);
-    dispatch(setPoints());
+    // dispatch(setPoints());
     setClicks([...clicks, { id: Date.now(), x: e.pageX, y: e.pageY }]);
   };
 
@@ -179,15 +200,15 @@ const App: React.FC = () => {
     return `+${profit}`;
   };
 
-  useEffect(() => {
-    // const pointsPerSecond = Math.floor(profitPerHour / 3600);
-    // const pointsPerSecond = 1;
-    const interval = setInterval(() => {
-      // setPoints(prevPoints => prevPoints + pointsPerSecond);
-      dispatch(setPoints());
-    }, 300000);
-    return () => clearInterval(interval);
-  }, [profitPerHour]);
+  // useEffect(() => {
+  //   // const pointsPerSecond = Math.floor(profitPerHour / 3600);
+  //   // const pointsPerSecond = 1;
+  //   const interval = setInterval(() => {
+  //     // setPoints(prevPoints => prevPoints + pointsPerSecond);
+  //     dispatch(setPoints());
+  //   }, 300000);
+  //   return () => clearInterval(interval);
+  // }, [profitPerHour]);
 
   return (
     <div className="bg-black flex justify-center">
