@@ -15,8 +15,8 @@ import Settings from "./icons/Settings";
 import Mine from "./icons/Mine";
 import Friends from "./icons/Friends";
 import Coins from "./icons/Coins";
-// import { useDispatch } from "react-redux";
-// import { setPoints } from "./redux/slices/pointsSlice";
+import { useDispatch, useSelector } from "react-redux";
+import { incrementPoints, setPoints } from "./redux/slices/pointsSlice";
 
 const App: React.FC = () => {
   const levelNames = [
@@ -45,7 +45,12 @@ const App: React.FC = () => {
     1000000000, // Lord
   ];
 
-  // const dispatch = useDispatch();
+  const dispatch = useDispatch();
+
+  // const userObj = {
+  //   first_name: "abhi",
+  //   id: "5237413924"
+  // }
 
   const [user, setUser] = useState(null);
   const [created, setCreated] = useState("");
@@ -85,8 +90,7 @@ const App: React.FC = () => {
   }, [user]);
 
   const [levelIndex, setLevelIndex] = useState(0);
-  const [points, setPoints] = useState(0);
-  // const points = useSelector((state: any) => state.points.points);
+  const points = useSelector((state: any) => state.points.points);
   const [clicks, setClicks] = useState<{ id: number; x: number; y: number }[]>(
     []
   );
@@ -100,12 +104,7 @@ const App: React.FC = () => {
             `http://localhost:5000/points/${userId}`
           );
           const data = await pointsRes?.json();
-          setPoints(data?.points)
-          // if (pointsRes?.ok) {
-          //   const data = await pointsRes?.json();
-          //   alert(data)
-          //   setPoints(data?.points);
-          // }
+          dispatch(setPoints(data?.points))
         } catch (error) {
           console.log("error in fetching points:", (error as any)?.message);
         }
@@ -113,7 +112,35 @@ const App: React.FC = () => {
 
       fetchPoints();
     }
-  }, [points]);
+  }, []);
+
+  const updateUserPoints = async() =>{
+    const data = {
+      userId : (user as any)?.id,
+      pointsToInc: points
+    }
+    try {
+      await fetch('http://localhost:5000/points/inc-points', {
+        method:"PUT",
+        headers:{
+          "Content-Type": 'application/json'
+        },
+        body: JSON.stringify(data)
+      })
+    } catch (error) {
+      console.log("error in updating points:", (error as any)?.message);
+    }
+  }
+
+  useEffect(()=>{
+    const interval = setInterval(() => {
+        updateUserPoints();
+    }, 20 * 1000);
+
+    return ()=>{
+      clearInterval(interval)
+    }
+  },[points])
 
   const pointsToAdd = 1;
   const profitPerHour = 126420;
@@ -166,8 +193,7 @@ const App: React.FC = () => {
       card.style.transform = "";
     }, 100);
 
-    // setPoints(points + pointsToAdd);
-    // dispatch(setPoints());
+    dispatch(incrementPoints());
     setClicks([...clicks, { id: Date.now(), x: e.pageX, y: e.pageY }]);
   };
 
