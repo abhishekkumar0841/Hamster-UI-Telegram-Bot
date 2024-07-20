@@ -19,6 +19,8 @@ import { useDispatch, useSelector } from "react-redux";
 import { incrementPoints, setPoints } from "./redux/slices/pointsSlice";
 
 const App: React.FC = () => {
+  const apiUrl = import.meta.env.VITE_API_URL;
+
   const levelNames = [
     "Bronze", // From 0 to 4999 coins
     "Silver", // From 5000 coins to 24,999 coins
@@ -67,7 +69,7 @@ const App: React.FC = () => {
       const data = { userId: (user as any)?.id };
       const createUser = async () => {
         try {
-          const createRes = await fetch(`http://localhost:5000/points/create`, {
+          const createRes = await fetch(`${apiUrl}/points/create`, {
             method: "POST",
             headers: {
               "Content-Type": "application/json",
@@ -101,7 +103,7 @@ const App: React.FC = () => {
         const userId = (user as any)?.id;
         try {
           const pointsRes = await fetch(
-            `http://localhost:5000/points/${userId}`
+            `${apiUrl}/points/${userId}`
           );
           const data = await pointsRes?.json();
           dispatch(setPoints(data?.points))
@@ -120,7 +122,7 @@ const App: React.FC = () => {
       pointsToInc: points
     }
     try {
-      await fetch('http://localhost:5000/points/inc-points', {
+      await fetch(`${apiUrl}/points/inc-points`, {
         method:"PUT",
         headers:{
           "Content-Type": 'application/json'
@@ -350,7 +352,7 @@ const App: React.FC = () => {
             <div className="px-4 mt-4 flex justify-center">
               <div className="px-4 py-2 flex items-center space-x-2">
                 <img src={dollarCoin} alt="Dollar Coin" className="w-10 h-10" />
-                <p className="text-4xl text-white">{points.toLocaleString()}</p>
+                <p className="text-4xl text-white">{points?.toLocaleString()}</p>
               </div>
             </div>
 
