@@ -238,7 +238,7 @@ const App: React.FC = () => {
 
   const updatePointsInDB = async ()=>{
     try {
-      const updateRes = await fetch(`${apiUrl}/points/update-points`, {
+       await fetch(`${apiUrl}/points/update-points`, {
         method:"PUT",
         headers:{
           'Content-Type': 'application/json'
