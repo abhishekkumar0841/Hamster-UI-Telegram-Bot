@@ -106,6 +106,7 @@ const App: React.FC = () => {
             `${apiUrl}/points/${userId}`
           );
           const data = await pointsRes?.json();
+          console.log('points:', data?.points);
           dispatch(setPoints(data?.points))
         } catch (error) {
           console.log("error in fetching points:", (error as any)?.message);
@@ -116,7 +117,7 @@ const App: React.FC = () => {
     }
   }, []);
 
-  const updateUserPoints = async() =>{
+  const incUserPoints = async() =>{
     const data = {
       userId : (user as any)?.id,
       pointsToInc: points
@@ -134,15 +135,15 @@ const App: React.FC = () => {
     }
   }
 
-  useEffect(()=>{
-    const interval = setInterval(() => {
-        updateUserPoints();
-    }, 20 * 1000);
+  // useEffect(()=>{
+  //   const interval = setInterval(() => {
+  //       incUserPoints();
+  //   }, 30 * 1000);
 
-    return ()=>{
-      clearInterval(interval)
-    }
-  },[points])
+  //   return ()=>{
+  //     clearInterval(interval)
+  //   }
+  // },[points])
 
   const pointsToAdd = 1;
   const profitPerHour = 126420;
@@ -199,6 +200,10 @@ const App: React.FC = () => {
     setClicks([...clicks, { id: Date.now(), x: e.pageX, y: e.pageY }]);
   };
 
+  useEffect(()=>{
+    incUserPoints()
+  },[handleCardClick])
+
   const handleAnimationEnd = (id: number) => {
     setClicks((prevClicks) => prevClicks.filter((click) => click.id !== id));
   };
@@ -230,6 +235,30 @@ const App: React.FC = () => {
     if (profit >= 1000) return `+${(profit / 1000).toFixed(2)}K`;
     return `+${profit}`;
   };
+
+  const updatePointsInDB = async ()=>{
+    try {
+      const updateRes = await fetch(`${apiUrl}/points/update-points`, {
+        method:"PUT",
+        headers:{
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({userId: (user as any)?.id})
+      })
+    } catch (error) {
+      console.log((error as any)?.message);
+    }
+  }
+
+  useEffect(()=>{
+    const interval = setInterval(() => {
+      updatePointsInDB()
+    }, 20000);
+
+    return ()=>{
+      clearInterval(interval)
+    }
+  },[points])
 
   // useEffect(() => {
   //   // const pointsPerSecond = Math.floor(profitPerHour / 3600);
